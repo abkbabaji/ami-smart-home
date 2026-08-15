@@ -246,6 +246,21 @@
       display: block;
     }
 
+    .image-option-divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 0.5rem 0;
+      color: #94a3b8;
+    }
+    .image-option-divider::before,
+    .image-option-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #e2e8f0;
+    }
+
     .btn {
       background: #0b1a2e;
       color: white;
@@ -321,30 +336,6 @@
       border-top: 1px solid #e2e8f0;
     }
 
-    .upload-progress {
-      display: none;
-      margin: 0.5rem 0;
-      color: #0b1a2e;
-    }
-    .upload-progress.show {
-      display: block;
-    }
-    .spinner {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 3px solid #e2e8f0;
-      border-top: 3px solid #c9a84c;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      vertical-align: middle;
-      margin-right: 10px;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
     footer {
       text-align: center;
       padding: 2rem 1rem;
@@ -413,21 +404,33 @@
         <label>Price <span class="optional">(optional)</span></label>
         <input type="text" id="propPrice" placeholder="e.g. $450,000 or leave empty" />
       </div>
+
+      <!-- OPTION 1: Upload from computer -->
       <div class="form-group">
-        <label>Upload image <span style="color:#dc2626;">*</span></label>
+        <label>Option 1: Upload from computer</label>
         <input type="file" id="propImage" accept="image/*" onchange="previewImage(event)" />
         <div class="image-preview" id="imagePreview">
           <img id="previewImg" src="" alt="Preview" />
         </div>
         <small style="color:#64748b;">Select a photo from your computer (JPG, PNG, WEBP)</small>
       </div>
+
+      <div class="image-option-divider">OR</div>
+
+      <!-- OPTION 2: Paste image link -->
+      <div class="form-group">
+        <label>Option 2: Paste image link</label>
+        <input type="text" id="propImageUrl" placeholder="Paste the image link from PostImages, ImgBB, or Imgur" />
+        <small style="color:#64748b;">Example: https://i.postimg.cc/xxxxx/image.jpg</small>
+        <button class="btn btn-outline" style="margin-top:0.5rem;padding:0.4rem 1rem;font-size:0.85rem;" onclick="previewImageUrl()">Preview link</button>
+        <div class="image-preview" id="urlPreview">
+          <img id="urlPreviewImg" src="" alt="Preview" />
+        </div>
+      </div>
+
       <div class="form-group">
         <label>Description <span class="optional">(optional)</span></label>
         <textarea id="propDesc" placeholder="Brief description..."></textarea>
-      </div>
-
-      <div class="upload-progress" id="uploadProgress">
-        <span class="spinner"></span> Uploading image...
       </div>
 
       <button class="btn" id="addBtn" onclick="addProperty()">➕ Add property</button>
@@ -451,38 +454,12 @@
 </footer>
 
 <script>
-  // ---------- IMAGE UPLOAD USING IMGBB (WORKING API KEY) ----------
-  const IMGBB_API_KEY = '6d207e02198a847aa64d0a0b2ff10e7c';
-  
-  async function uploadImage(file) {
-    const formData = new FormData();
-    formData.append('key', IMGBB_API_KEY);
-    formData.append('image', file);
-    
-    const response = await fetch('https://api.imgbb.com/1/upload', {
-      method: 'POST',
-      body: formData
-    });
-    
-    if (!response.ok) {
-      throw new Error('Network error. Please try again.');
-    }
-    
-    const data = await response.json();
-    
-    if (data.success) {
-      return data.data.url;
-    } else {
-      throw new Error('Upload failed: ' + (data.error?.message || 'Unknown error'));
-    }
-  }
-
   // ---------- SECURE STORAGE ----------
   let properties = [];
   let adminLoggedIn = false;
   let adminPassword = localStorage.getItem('ami_admin_password') || 'admin123';
   let selectedImage = null;
-  let isUploading = false;
+  let manualImageUrl = '';
 
   function loadData() {
     const stored = localStorage.getItem('ami_properties');
@@ -494,7 +471,7 @@
           id: Date.now() + 1,
           title: 'Sunny Hills Estate',
           price: '$525,000',
-          image: 'https://i.ibb.co/8sKXjK8/sample1.jpg',
+          image: 'https://i.postimg.cc/8sKXjK8/sample1.jpg',
           desc: '4 bedrooms, 3 baths, pool, and mountain views.',
           date: new Date().toLocaleDateString()
         },
@@ -502,7 +479,7 @@
           id: Date.now() + 2,
           title: 'Downtown Loft',
           price: '',
-          image: 'https://i.ibb.co/DpF2L8y/sample2.jpg',
+          image: 'https://i.postimg.cc/DpF2L8y/sample2.jpg',
           desc: 'Modern open-plan loft with rooftop terrace.',
           date: new Date().toLocaleDateString()
         }
@@ -521,6 +498,9 @@
     const file = event.target.files[0];
     if (!file) return;
     selectedImage = file;
+    manualImageUrl = ''; // Clear manual URL when file is selected
+    document.getElementById('propImageUrl').value = '';
+    document.getElementById('urlPreview').classList.remove('show');
     const reader = new FileReader();
     reader.onload = function(e) {
       const preview = document.getElementById('imagePreview');
@@ -529,6 +509,22 @@
       preview.classList.add('show');
     };
     reader.readAsDataURL(file);
+  }
+
+  function previewImageUrl() {
+    const url = document.getElementById('propImageUrl').value.trim();
+    if (!url) {
+      alert('Please paste an image link first.');
+      return;
+    }
+    manualImageUrl = url;
+    selectedImage = null; // Clear file selection
+    document.getElementById('propImage').value = '';
+    document.getElementById('imagePreview').classList.remove('show');
+    const preview = document.getElementById('urlPreview');
+    const img = document.getElementById('urlPreviewImg');
+    img.src = url;
+    preview.classList.add('show');
   }
 
   // ---------- RENDER ----------
@@ -626,13 +622,11 @@
   }
 
   // ---------- ADD PROPERTY ----------
-  async function addProperty() {
+  function addProperty() {
     if (!adminLoggedIn) {
       alert('Please login as admin first.');
       return;
     }
-
-    if (isUploading) return;
 
     const title = document.getElementById('propTitle').value.trim();
     const price = document.getElementById('propPrice').value.trim();
@@ -643,37 +637,29 @@
       return;
     }
 
-    if (!selectedImage) {
-      alert('Please select an image.');
-      return;
-    }
-
-    const addBtn = document.getElementById('addBtn');
-    const progress = document.getElementById('uploadProgress');
-    const msg = document.getElementById('uploadMsg');
-
+    // Check if image is provided via file OR manual link
     let imageUrl = '';
 
-    try {
-      isUploading = true;
-      addBtn.disabled = true;
-      progress.classList.add('show');
-      msg.textContent = '';
-
-      imageUrl = await uploadImage(selectedImage);
-
-      progress.classList.remove('show');
-      addBtn.disabled = false;
-      isUploading = false;
-
-    } catch (error) {
-      progress.classList.remove('show');
-      addBtn.disabled = false;
-      isUploading = false;
-      alert('Image upload failed: ' + error.message + '\nPlease try again.');
+    if (selectedImage) {
+      // Image from file upload - convert to base64
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        imageUrl = e.target.result;
+        saveProperty(title, price, desc, imageUrl);
+      };
+      reader.readAsDataURL(selectedImage);
+      return;
+    } else if (manualImageUrl) {
+      imageUrl = manualImageUrl;
+    } else {
+      alert('Please either select an image or paste an image link.');
       return;
     }
 
+    saveProperty(title, price, desc, imageUrl);
+  }
+
+  function saveProperty(title, price, desc, imageUrl) {
     const newProp = {
       id: Date.now(),
       title: title,
@@ -687,8 +673,8 @@
     saveData();
     renderProperties();
     clearForm();
-    msg.textContent = '✅ Property added successfully!';
-    msg.style.color = '#16a34a';
+    document.getElementById('uploadMsg').textContent = '✅ Property added successfully!';
+    document.getElementById('uploadMsg').style.color = '#16a34a';
     showPublic();
   }
 
@@ -697,13 +683,14 @@
     document.getElementById('propPrice').value = '';
     document.getElementById('propDesc').value = '';
     document.getElementById('propImage').value = '';
+    document.getElementById('propImageUrl').value = '';
     document.getElementById('imagePreview').classList.remove('show');
+    document.getElementById('urlPreview').classList.remove('show');
     document.getElementById('previewImg').src = '';
+    document.getElementById('urlPreviewImg').src = '';
     selectedImage = null;
+    manualImageUrl = '';
     document.getElementById('uploadMsg').textContent = '';
-    document.getElementById('uploadProgress').classList.remove('show');
-    document.getElementById('addBtn').disabled = false;
-    isUploading = false;
   }
 
   // ---------- INIT ----------

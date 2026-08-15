@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AMI SMART HOMES</title>
+  <title>AMI SMART HOMES – Lands for Sale</title>
   <style>
     * {
       margin: 0;
@@ -13,61 +13,71 @@
     }
 
     body {
-      background: #f8fafc;
-      color: #0b1a2e;
+      background: #f6f8fc;
+      color: #1a2332;
     }
 
     header {
-      background: #0b1a2e;
-      padding: 1.2rem 2rem;
+      background: #0f1a2e;
+      padding: 1rem 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
       border-bottom: 3px solid #c9a84c;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.15);
     }
 
     .logo h1 {
       color: #fff;
       font-weight: 300;
       letter-spacing: 2px;
-      font-size: 1.8rem;
+      font-size: 1.6rem;
     }
     .logo span {
       color: #c9a84c;
-      font-weight: 600;
+      font-weight: 700;
+    }
+    .logo small {
+      color: #94a3b8;
+      font-size: 0.7rem;
+      font-weight: 300;
+      letter-spacing: 1px;
+      display: block;
     }
 
     .nav-links a {
       color: #e2e8f0;
       text-decoration: none;
-      margin-left: 2rem;
+      margin-left: 1.8rem;
       font-weight: 400;
       transition: 0.2s;
       cursor: pointer;
+      font-size: 0.95rem;
     }
     .nav-links a:hover {
       color: #c9a84c;
     }
 
     .hero {
-      background: linear-gradient(135deg, #0b1a2e 0%, #1a2f44 100%);
+      background: linear-gradient(145deg, #0f1a2e 0%, #1a2f4a 100%);
       color: white;
-      padding: 3.5rem 2rem;
+      padding: 3rem 2rem;
       text-align: center;
+      border-bottom: 1px solid #c9a84c33;
     }
     .hero h2 {
-      font-size: 2.8rem;
+      font-size: 2.6rem;
       font-weight: 300;
       letter-spacing: 1px;
     }
     .hero h2 span {
       color: #c9a84c;
-      font-weight: 600;
+      font-weight: 700;
     }
     .hero p {
-      margin-top: 0.8rem;
-      font-size: 1.2rem;
+      margin-top: 0.6rem;
+      font-size: 1.1rem;
       opacity: 0.8;
       max-width: 600px;
       margin-left: auto;
@@ -81,12 +91,13 @@
     }
 
     .section-title {
-      font-size: 2rem;
+      font-size: 1.8rem;
       font-weight: 300;
       border-bottom: 2px solid #c9a84c;
       padding-bottom: 0.5rem;
       margin-bottom: 2rem;
       display: inline-block;
+      color: #0f1a2e;
     }
 
     .property-grid {
@@ -97,16 +108,16 @@
 
     .property-card {
       background: white;
-      border-radius: 12px;
+      border-radius: 14px;
       overflow: hidden;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
-      transition: 0.25s ease;
-      border: 1px solid #eef2f6;
-      position: relative;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.07);
+      transition: 0.3s ease;
+      border: 1px solid #edf2f7;
+      cursor: pointer;
     }
     .property-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 14px 30px rgba(0,0,0,0.10);
+      transform: translateY(-8px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.12);
     }
 
     .property-card img {
@@ -115,74 +126,143 @@
       object-fit: cover;
       display: block;
       background: #d9e2ec;
+      transition: 0.3s;
+    }
+    .property-card img:hover {
+      opacity: 0.92;
     }
 
     .property-info {
       padding: 1.2rem 1.2rem 1.5rem;
     }
     .property-info h3 {
-      font-size: 1.3rem;
-      font-weight: 600;
-      color: #0b1a2e;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #0f1a2e;
     }
     .property-info .price {
       color: #c9a84c;
-      font-weight: 600;
+      font-weight: 700;
       font-size: 1.2rem;
-      margin: 0.3rem 0 0.5rem;
+      margin: 0.3rem 0 0.4rem;
     }
     .property-info .desc {
-      color: #334155;
-      font-size: 0.95rem;
+      color: #475569;
+      font-size: 0.92rem;
       line-height: 1.5;
     }
-    .property-info .date {
+    .property-info .meta {
       font-size: 0.8rem;
       color: #94a3b8;
       margin-top: 0.6rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .property-info .meta span {
+      background: #f1f5f9;
+      padding: 0.2rem 0.8rem;
+      border-radius: 20px;
     }
 
-    .delete-btn {
+    .delete-btn, .edit-btn {
       position: absolute;
       top: 10px;
-      right: 10px;
-      background: #dc2626;
-      color: white;
-      border: none;
-      border-radius: 50%;
       width: 32px;
       height: 32px;
-      font-size: 1rem;
+      border: none;
+      border-radius: 50%;
+      font-size: 0.9rem;
       cursor: pointer;
       display: none;
       align-items: center;
       justify-content: center;
       transition: 0.2s;
-      box-shadow: 0 2px 8px rgba(220,38,38,0.3);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      z-index: 5;
+    }
+    .delete-btn {
+      right: 10px;
+      background: #dc2626;
+      color: white;
     }
     .delete-btn:hover {
       background: #b91c1c;
       transform: scale(1.05);
     }
-    .delete-btn.show {
+    .edit-btn {
+      right: 50px;
+      background: #c9a84c;
+      color: white;
+    }
+    .edit-btn:hover {
+      background: #b8973a;
+      transform: scale(1.05);
+    }
+    .delete-btn.show, .edit-btn.show {
       display: flex;
+    }
+
+    .property-card {
+      position: relative;
     }
 
     .empty-msg {
       text-align: center;
-      color: #64748b;
+      color: #94a3b8;
       font-size: 1.2rem;
       padding: 3rem 0;
       grid-column: 1 / -1;
     }
 
+    /* IMAGE MODAL */
+    .image-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
+      z-index: 999;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      padding: 2rem;
+    }
+    .image-modal.active {
+      display: flex;
+    }
+    .image-modal img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      object-fit: contain;
+    }
+    .image-modal .close-modal {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      color: white;
+      font-size: 2.5rem;
+      cursor: pointer;
+      font-weight: 300;
+      transition: 0.2s;
+    }
+    .image-modal .close-modal:hover {
+      color: #c9a84c;
+      transform: rotate(90deg);
+    }
+
+    /* ADMIN PANEL */
     #adminPanel {
       display: none;
       margin-top: 3rem;
       background: #fff;
       border-radius: 16px;
       padding: 2rem 2rem 2.5rem;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      box-shadow: 0 10px 35px rgba(0,0,0,0.06);
       border: 1px solid #e2e8f0;
     }
     #adminPanel.active {
@@ -194,6 +274,7 @@
       border-bottom: 2px solid #c9a84c;
       padding-bottom: 0.5rem;
       margin-bottom: 1.5rem;
+      color: #0f1a2e;
     }
 
     .form-group {
@@ -201,7 +282,7 @@
     }
     .form-group label {
       display: block;
-      font-weight: 500;
+      font-weight: 600;
       margin-bottom: 0.3rem;
       color: #1e293b;
     }
@@ -211,7 +292,8 @@
       font-size: 0.85rem;
     }
     .form-group input,
-    .form-group textarea {
+    .form-group textarea,
+    .form-group select {
       width: 100%;
       padding: 0.7rem 1rem;
       border: 1px solid #d1d9e6;
@@ -262,7 +344,7 @@
     }
 
     .btn {
-      background: #0b1a2e;
+      background: #0f1a2e;
       color: white;
       border: none;
       padding: 0.7rem 2rem;
@@ -274,7 +356,7 @@
       margin-right: 0.8rem;
     }
     .btn:hover {
-      background: #1a2f44;
+      background: #1a2f4a;
     }
     .btn-gold {
       background: #c9a84c;
@@ -285,15 +367,25 @@
     .btn-outline {
       background: transparent;
       border: 1px solid #c9a84c;
-      color: #0b1a2e;
+      color: #0f1a2e;
     }
     .btn-outline:hover {
       background: #c9a84c;
       color: white;
     }
+    .btn-danger {
+      background: #dc2626;
+    }
+    .btn-danger:hover {
+      background: #b91c1c;
+    }
     .btn:disabled {
       opacity: 0.6;
       cursor: not-allowed;
+    }
+    .btn-sm {
+      padding: 0.3rem 1rem;
+      font-size: 0.85rem;
     }
 
     .login-box {
@@ -336,10 +428,33 @@
       border-top: 1px solid #e2e8f0;
     }
 
+    .admin-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .admin-stats .stat-card {
+      background: #f8fafc;
+      padding: 1rem;
+      border-radius: 10px;
+      text-align: center;
+      border: 1px solid #e2e8f0;
+    }
+    .admin-stats .stat-card .number {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #0f1a2e;
+    }
+    .admin-stats .stat-card .label {
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+
     footer {
       text-align: center;
       padding: 2rem 1rem;
-      color: #64748b;
+      color: #94a3b8;
       font-size: 0.9rem;
       border-top: 1px solid #e2e8f0;
       margin-top: 2rem;
@@ -359,7 +474,10 @@
         margin-right: 1.5rem;
       }
       .hero h2 {
-        font-size: 2rem;
+        font-size: 1.8rem;
+      }
+      .admin-stats {
+        grid-template-columns: 1fr 1fr;
       }
     }
   </style>
@@ -367,7 +485,10 @@
 <body>
 
 <header>
-  <div class="logo"><h1>AMI <span>SMART</span> HOMES</h1></div>
+  <div class="logo">
+    <h1>AMI <span>SMART</span> HOMES</h1>
+    <small>Premium Lands & Properties</small>
+  </div>
   <div class="nav-links">
     <a onclick="showPublic()">🏠 Properties</a>
     <a onclick="toggleAdmin()">🔐 Admin</a>
@@ -375,19 +496,19 @@
 </header>
 
 <section class="hero">
-  <h2>Your <span>smart</span> move starts here</h2>
-  <p>Discover handpicked properties — clean, modern, and built for living well.</p>
+  <h2>Premium <span>Lands</span> for Sale</h2>
+  <p>Discover prime land opportunities — secure, spacious, and built for your future.</p>
 </section>
 
 <div class="container">
 
   <div id="publicSection">
-    <h2 class="section-title">Available properties</h2>
+    <h2 class="section-title">Available Lands & Properties</h2>
     <div class="property-grid" id="propertyGrid"></div>
   </div>
 
   <div id="adminPanel">
-    <h2>📤 Admin Dashboard</h2>
+    <h2>📊 Admin Dashboard</h2>
 
     <div class="login-box">
       <input type="password" id="adminPass" placeholder="Enter admin password" />
@@ -396,13 +517,38 @@
     </div>
 
     <div id="uploadForm" style="display:none;">
+      <!-- Stats -->
+      <div class="admin-stats">
+        <div class="stat-card">
+          <div class="number" id="totalProperties">0</div>
+          <div class="label">Total Properties</div>
+        </div>
+        <div class="stat-card">
+          <div class="number" id="todayAdded">0</div>
+          <div class="label">Added Today</div>
+        </div>
+      </div>
+
+      <div id="editModeIndicator" style="display:none;background:#fef3c7;padding:0.8rem 1rem;border-radius:8px;margin-bottom:1rem;border-left:4px solid #c9a84c;">
+        ✏️ Editing: <span id="editTitleDisplay"></span>
+        <button class="btn btn-outline btn-sm" onclick="cancelEdit()" style="margin-left:1rem;">Cancel Edit</button>
+      </div>
+
       <div class="form-group">
         <label>Property title <span style="color:#dc2626;">*</span></label>
-        <input type="text" id="propTitle" placeholder="e.g. Modern 3BR Villa" />
+        <input type="text" id="propTitle" placeholder="e.g. Victoria Island Land" />
       </div>
       <div class="form-group">
         <label>Price <span class="optional">(optional)</span></label>
-        <input type="text" id="propPrice" placeholder="e.g. $450,000 or leave empty" />
+        <input type="text" id="propPrice" placeholder="e.g. N37,500,000 or leave empty" />
+      </div>
+      <div class="form-group">
+        <label>Location <span class="optional">(optional)</span></label>
+        <input type="text" id="propLocation" placeholder="e.g. GWARINPA EXTENSION, ABUJA" />
+      </div>
+      <div class="form-group">
+        <label>Land Size <span class="optional">(optional)</span></label>
+        <input type="text" id="propSize" placeholder="e.g. 250sqm" />
       </div>
 
       <!-- OPTION 1: Upload from computer -->
@@ -412,7 +558,6 @@
         <div class="image-preview" id="imagePreview">
           <img id="previewImg" src="" alt="Preview" />
         </div>
-        <small style="color:#64748b;">Select a photo from your computer (JPG, PNG, WEBP)</small>
       </div>
 
       <div class="image-option-divider">OR</div>
@@ -421,8 +566,7 @@
       <div class="form-group">
         <label>Option 2: Paste image link</label>
         <input type="text" id="propImageUrl" placeholder="Paste the image link from PostImages, ImgBB, or Imgur" />
-        <small style="color:#64748b;">Example: https://i.postimg.cc/xxxxx/image.jpg</small>
-        <button class="btn btn-outline" style="margin-top:0.5rem;padding:0.4rem 1rem;font-size:0.85rem;" onclick="previewImageUrl()">Preview link</button>
+        <button class="btn btn-outline btn-sm" style="margin-top:0.5rem;padding:0.3rem 1rem;" onclick="previewImageUrl()">Preview link</button>
         <div class="image-preview" id="urlPreview">
           <img id="urlPreviewImg" src="" alt="Preview" />
         </div>
@@ -449,6 +593,12 @@
   </div>
 </div>
 
+<!-- IMAGE MODAL -->
+<div class="image-modal" id="imageModal" onclick="closeModal()">
+  <span class="close-modal" onclick="closeModal()">✕</span>
+  <img id="modalImage" src="" alt="Property Image" />
+</div>
+
 <footer>
   &copy; 2026 <span>AMI SMART HOMES</span> — all rights reserved.
 </footer>
@@ -460,6 +610,7 @@
   let adminPassword = localStorage.getItem('ami_admin_password') || 'admin123';
   let selectedImage = null;
   let manualImageUrl = '';
+  let editingId = null; // Track which property is being edited
 
   function loadData() {
     const stored = localStorage.getItem('ami_properties');
@@ -469,28 +620,32 @@
       properties = [
         {
           id: Date.now() + 1,
-          title: 'Sunny Hills Estate',
-          price: '$525,000',
-          image: 'https://i.postimg.cc/8sKXjK8/sample1.jpg',
-          desc: '4 bedrooms, 3 baths, pool, and mountain views.',
-          date: new Date().toLocaleDateString()
-        },
-        {
-          id: Date.now() + 2,
-          title: 'Downtown Loft',
-          price: '',
-          image: 'https://i.postimg.cc/DpF2L8y/sample2.jpg',
-          desc: 'Modern open-plan loft with rooftop terrace.',
+          title: 'Victory Park Resort',
+          price: 'From N37.5m',
+          location: 'GWARINPA EXTENSION, ABUJA',
+          size: '250sqm - 500sqm',
+          image: 'https://i.postimg.cc/bwSnYGgn/IMG-4906.jpg',
+          desc: 'Terrace Duplex | Fully Detached | Luxury Detached. No. 2 Lobito Crescent, Lobito Mall, Wuse 2, Abuja.',
           date: new Date().toLocaleDateString()
         }
       ];
       saveData();
     }
     renderProperties();
+    updateStats();
   }
 
   function saveData() {
     localStorage.setItem('ami_properties', JSON.stringify(properties));
+    updateStats();
+  }
+
+  // ---------- STATS ----------
+  function updateStats() {
+    document.getElementById('totalProperties').textContent = properties.length;
+    const today = new Date().toLocaleDateString();
+    const todayCount = properties.filter(p => p.date === today).length;
+    document.getElementById('todayAdded').textContent = todayCount;
   }
 
   // ---------- IMAGE PREVIEW ----------
@@ -498,7 +653,7 @@
     const file = event.target.files[0];
     if (!file) return;
     selectedImage = file;
-    manualImageUrl = ''; // Clear manual URL when file is selected
+    manualImageUrl = '';
     document.getElementById('propImageUrl').value = '';
     document.getElementById('urlPreview').classList.remove('show');
     const reader = new FileReader();
@@ -518,7 +673,7 @@
       return;
     }
     manualImageUrl = url;
-    selectedImage = null; // Clear file selection
+    selectedImage = null;
     document.getElementById('propImage').value = '';
     document.getElementById('imagePreview').classList.remove('show');
     const preview = document.getElementById('urlPreview');
@@ -527,28 +682,48 @@
     preview.classList.add('show');
   }
 
+  // ---------- IMAGE MODAL ----------
+  function openModal(imageSrc) {
+    const modal = document.getElementById('imageModal');
+    const img = document.getElementById('modalImage');
+    img.src = imageSrc;
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    document.getElementById('imageModal').classList.remove('active');
+    document.body.style.overflow = 'auto';
+  }
+
   // ---------- RENDER ----------
   function renderProperties() {
     const grid = document.getElementById('propertyGrid');
     if (!grid) return;
     if (properties.length === 0) {
-      grid.innerHTML = `<div class="empty-msg">🏡 No properties listed yet. Check back soon!</div>`;
+      grid.innerHTML = `<div class="empty-msg">🏡 No properties listed yet. Add your first land listing!</div>`;
       return;
     }
     grid.innerHTML = properties.map(p => {
-      const priceHtml = p.price && p.price.trim() !== '' 
-        ? `<div class="price">${p.price}</div>` 
-        : '';
+      const priceHtml = p.price && p.price.trim() !== '' ? `<div class="price">${p.price}</div>` : '';
+      const locationHtml = p.location ? `<span>📍 ${p.location}</span>` : '';
+      const sizeHtml = p.size ? `<span>📐 ${p.size}</span>` : '';
+      const imageSrc = p.image && p.image.startsWith('data:') ? p.image : (p.image || 'https://picsum.photos/600/400?random=99');
       return `
       <div class="property-card" data-id="${p.id}">
-        <img src="${p.image || 'https://picsum.photos/600/400?random=99'}" alt="${p.title}" loading="lazy" onerror="this.src='https://picsum.photos/600/400?random=99'" />
+        <img src="${imageSrc}" alt="${p.title}" loading="lazy" onerror="this.src='https://picsum.photos/600/400?random=99'" onclick="openModal('${imageSrc}')" />
+        <button class="edit-btn ${adminLoggedIn ? 'show' : ''}" onclick="event.stopPropagation();editProperty(${p.id})">✎</button>
+        <button class="delete-btn ${adminLoggedIn ? 'show' : ''}" onclick="event.stopPropagation();deleteProperty(${p.id})">✕</button>
         <div class="property-info">
           <h3>${p.title}</h3>
           ${priceHtml}
           <div class="desc">${p.desc || ''}</div>
-          <div class="date">📅 ${p.date || ''}</div>
+          <div class="meta">
+            ${locationHtml}
+            ${sizeHtml}
+            <span>📅 ${p.date || ''}</span>
+          </div>
         </div>
-        <button class="delete-btn ${adminLoggedIn ? 'show' : ''}" onclick="deleteProperty(${p.id})">✕</button>
       </div>
     `}).join('');
   }
@@ -565,6 +740,51 @@
     renderProperties();
     document.getElementById('uploadMsg').textContent = '🗑️ Property deleted';
     document.getElementById('uploadMsg').style.color = '#dc2626';
+    if (editingId === id) cancelEdit();
+  }
+
+  // ---------- EDIT ----------
+  function editProperty(id) {
+    if (!adminLoggedIn) {
+      alert('Please login as admin first.');
+      return;
+    }
+    const prop = properties.find(p => p.id === id);
+    if (!prop) return;
+
+    editingId = id;
+    document.getElementById('editModeIndicator').style.display = 'block';
+    document.getElementById('editTitleDisplay').textContent = prop.title;
+
+    document.getElementById('propTitle').value = prop.title || '';
+    document.getElementById('propPrice').value = prop.price || '';
+    document.getElementById('propLocation').value = prop.location || '';
+    document.getElementById('propSize').value = prop.size || '';
+    document.getElementById('propDesc').value = prop.desc || '';
+    document.getElementById('propImageUrl').value = prop.image || '';
+    document.getElementById('addBtn').textContent = '💾 Update Property';
+
+    // Show existing image preview
+    if (prop.image) {
+      const preview = document.getElementById('urlPreview');
+      const img = document.getElementById('urlPreviewImg');
+      img.src = prop.image;
+      preview.classList.add('show');
+      manualImageUrl = prop.image;
+    }
+
+    document.getElementById('uploadMsg').textContent = '✏️ Editing: ' + prop.title;
+    document.getElementById('uploadMsg').style.color = '#c9a84c';
+
+    // Scroll to form
+    document.getElementById('uploadForm').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function cancelEdit() {
+    editingId = null;
+    document.getElementById('editModeIndicator').style.display = 'none';
+    document.getElementById('addBtn').textContent = '➕ Add property';
+    clearForm();
   }
 
   // ---------- ADMIN LOGIN ----------
@@ -579,6 +799,7 @@
       document.getElementById('uploadMsg').style.color = '#16a34a';
       renderProperties();
       document.getElementById('adminPass').value = '';
+      updateStats();
     } else {
       alert('❌ Incorrect password. Try again.');
     }
@@ -590,6 +811,7 @@
     if (!panel.classList.contains('active')) {
       document.getElementById('uploadForm').style.display = 'none';
       document.getElementById('uploadMsg').textContent = '';
+      cancelEdit();
     } else {
       if (!adminLoggedIn) {
         document.getElementById('uploadForm').style.display = 'none';
@@ -621,7 +843,7 @@
     document.getElementById('newPass').value = '';
   }
 
-  // ---------- ADD PROPERTY ----------
+  // ---------- ADD / UPDATE PROPERTY ----------
   function addProperty() {
     if (!adminLoggedIn) {
       alert('Please login as admin first.');
@@ -630,6 +852,8 @@
 
     const title = document.getElementById('propTitle').value.trim();
     const price = document.getElementById('propPrice').value.trim();
+    const location = document.getElementById('propLocation').value.trim();
+    const size = document.getElementById('propSize').value.trim();
     const desc = document.getElementById('propDesc').value.trim();
 
     if (!title) {
@@ -637,50 +861,80 @@
       return;
     }
 
-    // Check if image is provided via file OR manual link
     let imageUrl = '';
 
     if (selectedImage) {
-      // Image from file upload - convert to base64
       const reader = new FileReader();
       reader.onload = function(e) {
         imageUrl = e.target.result;
-        saveProperty(title, price, desc, imageUrl);
+        saveProperty(title, price, location, size, desc, imageUrl);
       };
       reader.readAsDataURL(selectedImage);
       return;
     } else if (manualImageUrl) {
       imageUrl = manualImageUrl;
     } else {
-      alert('Please either select an image or paste an image link.');
-      return;
+      const urlField = document.getElementById('propImageUrl').value.trim();
+      if (urlField) {
+        imageUrl = urlField;
+        manualImageUrl = urlField;
+      } else {
+        alert('Please either select an image or paste an image link.');
+        return;
+      }
     }
 
-    saveProperty(title, price, desc, imageUrl);
+    saveProperty(title, price, location, size, desc, imageUrl);
   }
 
-  function saveProperty(title, price, desc, imageUrl) {
-    const newProp = {
-      id: Date.now(),
-      title: title,
-      price: price || '',
-      image: imageUrl,
-      desc: desc || '',
-      date: new Date().toLocaleDateString()
-    };
-
-    properties.unshift(newProp);
-    saveData();
-    renderProperties();
-    clearForm();
-    document.getElementById('uploadMsg').textContent = '✅ Property added successfully!';
-    document.getElementById('uploadMsg').style.color = '#16a34a';
-    showPublic();
+  function saveProperty(title, price, location, size, desc, imageUrl) {
+    if (editingId) {
+      // UPDATE existing property
+      const index = properties.findIndex(p => p.id === editingId);
+      if (index !== -1) {
+        properties[index] = {
+          ...properties[index],
+          title: title,
+          price: price || '',
+          location: location || '',
+          size: size || '',
+          desc: desc || '',
+          image: imageUrl
+        };
+        saveData();
+        renderProperties();
+        cancelEdit();
+        document.getElementById('uploadMsg').textContent = '✅ Property updated!';
+        document.getElementById('uploadMsg').style.color = '#16a34a';
+        showPublic();
+      }
+    } else {
+      // ADD new property
+      const newProp = {
+        id: Date.now(),
+        title: title,
+        price: price || '',
+        location: location || '',
+        size: size || '',
+        image: imageUrl,
+        desc: desc || '',
+        date: new Date().toLocaleDateString()
+      };
+      properties.unshift(newProp);
+      saveData();
+      renderProperties();
+      clearForm();
+      document.getElementById('uploadMsg').textContent = '✅ Property added!';
+      document.getElementById('uploadMsg').style.color = '#16a34a';
+      showPublic();
+    }
   }
 
   function clearForm() {
     document.getElementById('propTitle').value = '';
     document.getElementById('propPrice').value = '';
+    document.getElementById('propLocation').value = '';
+    document.getElementById('propSize').value = '';
     document.getElementById('propDesc').value = '';
     document.getElementById('propImage').value = '';
     document.getElementById('propImageUrl').value = '';
@@ -691,6 +945,9 @@
     selectedImage = null;
     manualImageUrl = '';
     document.getElementById('uploadMsg').textContent = '';
+    document.getElementById('addBtn').textContent = '➕ Add property';
+    document.getElementById('editModeIndicator').style.display = 'none';
+    editingId = null;
   }
 
   // ---------- INIT ----------

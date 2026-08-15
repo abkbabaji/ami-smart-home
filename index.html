@@ -131,6 +131,9 @@
       font-size: 1.2rem;
       margin: 0.3rem 0 0.5rem;
     }
+    .property-info .price.hidden {
+      display: none;
+    }
     .property-info .desc {
       color: #334155;
       font-size: 0.95rem;
@@ -204,6 +207,11 @@
       font-weight: 500;
       margin-bottom: 0.3rem;
       color: #1e293b;
+    }
+    .form-group label .optional {
+      font-weight: 400;
+      color: #94a3b8;
+      font-size: 0.85rem;
     }
     .form-group input,
     .form-group textarea {
@@ -407,15 +415,15 @@
 
     <div id="uploadForm" style="display:none;">
       <div class="form-group">
-        <label>Property title</label>
+        <label>Property title <span style="color:#dc2626;">*</span></label>
         <input type="text" id="propTitle" placeholder="e.g. Modern 3BR Villa" />
       </div>
       <div class="form-group">
-        <label>Price</label>
-        <input type="text" id="propPrice" placeholder="e.g. $450,000" />
+        <label>Price <span class="optional">(optional)</span></label>
+        <input type="text" id="propPrice" placeholder="e.g. $450,000 or leave empty" />
       </div>
       <div class="form-group">
-        <label>Upload image</label>
+        <label>Upload image <span style="color:#dc2626;">*</span></label>
         <input type="file" id="propImage" accept="image/*" onchange="previewImage(event)" />
         <div class="image-preview" id="imagePreview">
           <img id="previewImg" src="" alt="Preview" />
@@ -423,7 +431,7 @@
         <small style="color:#64748b;">Select a photo from your computer (JPG, PNG, WEBP)</small>
       </div>
       <div class="form-group">
-        <label>Description</label>
+        <label>Description <span class="optional">(optional)</span></label>
         <textarea id="propDesc" placeholder="Brief description..."></textarea>
       </div>
 
@@ -453,8 +461,6 @@
 
 <script>
   // ---------- FREE IMAGE HOSTING USING FREEIMAGE.HOST ----------
-  // This uses a public upload endpoint that works without an API key
-  
   async function uploadImage(file) {
     const formData = new FormData();
     formData.append('source', file);
@@ -498,7 +504,7 @@
         {
           id: Date.now() + 2,
           title: 'Downtown Loft',
-          price: '$310,000',
+          price: '',
           image: 'https://i.ibb.co/DpF2L8y/sample2.jpg',
           desc: 'Modern open-plan loft with rooftop terrace.',
           date: new Date().toLocaleDateString()
@@ -536,18 +542,22 @@
       grid.innerHTML = `<div class="empty-msg">🏡 No properties listed yet. Check back soon!</div>`;
       return;
     }
-    grid.innerHTML = properties.map(p => `
+    grid.innerHTML = properties.map(p => {
+      const priceHtml = p.price && p.price.trim() !== '' 
+        ? `<div class="price">${p.price}</div>` 
+        : '';
+      return `
       <div class="property-card" data-id="${p.id}">
         <img src="${p.image || 'https://picsum.photos/600/400?random=99'}" alt="${p.title}" loading="lazy" onerror="this.src='https://picsum.photos/600/400?random=99'" />
         <div class="property-info">
           <h3>${p.title}</h3>
-          <div class="price">${p.price}</div>
+          ${priceHtml}
           <div class="desc">${p.desc || ''}</div>
           <div class="date">📅 ${p.date || ''}</div>
         </div>
         <button class="delete-btn ${adminLoggedIn ? 'show' : ''}" onclick="deleteProperty(${p.id})">✕</button>
       </div>
-    `).join('');
+    `}).join('');
   }
 
   // ---------- DELETE ----------
@@ -631,8 +641,13 @@
     const price = document.getElementById('propPrice').value.trim();
     const desc = document.getElementById('propDesc').value.trim();
 
-    if (!title || !price) {
-      alert('Title and price are required.');
+    if (!title) {
+      alert('Property title is required.');
+      return;
+    }
+
+    if (!selectedImage) {
+      alert('Please select an image.');
       return;
     }
 
@@ -642,34 +657,30 @@
 
     let imageUrl = '';
 
-    if (selectedImage) {
-      try {
-        isUploading = true;
-        addBtn.disabled = true;
-        progress.classList.add('show');
-        msg.textContent = '';
+    try {
+      isUploading = true;
+      addBtn.disabled = true;
+      progress.classList.add('show');
+      msg.textContent = '';
 
-        imageUrl = await uploadImage(selectedImage);
+      imageUrl = await uploadImage(selectedImage);
 
-        progress.classList.remove('show');
-        addBtn.disabled = false;
-        isUploading = false;
+      progress.classList.remove('show');
+      addBtn.disabled = false;
+      isUploading = false;
 
-      } catch (error) {
-        progress.classList.remove('show');
-        addBtn.disabled = false;
-        isUploading = false;
-        alert('Image upload failed: ' + error.message + '\nPlease try again.');
-        return;
-      }
-    } else {
-      imageUrl = 'https://picsum.photos/600/400?random=' + Date.now();
+    } catch (error) {
+      progress.classList.remove('show');
+      addBtn.disabled = false;
+      isUploading = false;
+      alert('Image upload failed: ' + error.message + '\nPlease try again.');
+      return;
     }
 
     const newProp = {
       id: Date.now(),
       title: title,
-      price: price,
+      price: price || '',
       image: imageUrl,
       desc: desc || '',
       date: new Date().toLocaleDateString()

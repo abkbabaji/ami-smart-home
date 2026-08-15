@@ -218,6 +218,28 @@
       resize: vertical;
       min-height: 60px;
     }
+    .form-group input[type="file"] {
+      padding: 0.5rem;
+      background: white;
+    }
+
+    .image-preview {
+      margin-top: 0.5rem;
+      max-width: 200px;
+      max-height: 150px;
+      border-radius: 8px;
+      overflow: hidden;
+      display: none;
+      border: 1px solid #e2e8f0;
+    }
+    .image-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .image-preview.show {
+      display: block;
+    }
 
     .btn {
       background: #0b1a2e;
@@ -254,6 +276,10 @@
     }
     .btn-danger:hover {
       background: #b91c1c;
+    }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
 
     .login-box {
@@ -294,6 +320,30 @@
       margin-top: 1.5rem;
       padding-top: 1.5rem;
       border-top: 1px solid #e2e8f0;
+    }
+
+    .upload-progress {
+      display: none;
+      margin: 0.5rem 0;
+      color: #0b1a2e;
+    }
+    .upload-progress.show {
+      display: block;
+    }
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #e2e8f0;
+      border-top: 3px solid #c9a84c;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      vertical-align: middle;
+      margin-right: 10px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
     footer {
@@ -365,15 +415,23 @@
         <input type="text" id="propPrice" placeholder="e.g. $450,000" />
       </div>
       <div class="form-group">
-        <label>Image URL</label>
-        <input type="text" id="propImage" placeholder="https://... (or use a placeholder)" />
-        <small style="color:#64748b;">Paste a direct image link.</small>
+        <label>Upload image</label>
+        <input type="file" id="propImage" accept="image/*" onchange="previewImage(event)" />
+        <div class="image-preview" id="imagePreview">
+          <img id="previewImg" src="" alt="Preview" />
+        </div>
+        <small style="color:#64748b;">Select a photo from your computer (JPG, PNG, WEBP) – auto-uploads to free hosting</small>
       </div>
       <div class="form-group">
         <label>Description</label>
         <textarea id="propDesc" placeholder="Brief description..."></textarea>
       </div>
-      <button class="btn" onclick="addProperty()">➕ Add property</button>
+
+      <div class="upload-progress" id="uploadProgress">
+        <span class="spinner"></span> Uploading image...
+      </div>
+
+      <button class="btn" id="addBtn" onclick="addProperty()">➕ Add property</button>
       <button class="btn btn-outline" onclick="clearForm()">Clear</button>
       <span id="uploadMsg" style="margin-left:1rem;color:#16a34a;"></span>
 
@@ -394,10 +452,17 @@
 </footer>
 
 <script>
+  // ---------- CONFIG ----------
+  // Free ImgBB API key (public key, safe to share)
+  const IMGBB_API_KEY = '6d207e02198a847aa64d0a0b2ff10e7c';
+  const IMGBB_UPLOAD_URL = 'https://api.imgbb.com/1/upload';
+
   // ---------- SECURE STORAGE ----------
   let properties = [];
   let adminLoggedIn = false;
   let adminPassword = localStorage.getItem('ami_admin_password') || 'admin123';
+  let selectedImage = null;
+  let isUploading = false;
 
   function loadData() {
     const stored = localStorage.getItem('ami_properties');
@@ -409,7 +474,7 @@
           id: Date.now() + 1,
           title: 'Sunny Hills Estate',
           price: '$525,000',
-          image: 'https://picsum.photos/600/400?random=10',
+          image: 'https://i.ibb.co/8sKXjK8/sample1.jpg',
           desc: '4 bedrooms, 3 baths, pool, and mountain views.',
           date: new Date().toLocaleDateString()
         },
@@ -417,7 +482,7 @@
           id: Date.now() + 2,
           title: 'Downtown Loft',
           price: '$310,000',
-          image: 'https://picsum.photos/600/400?random=20',
+          image: 'https://i.ibb.co/DpF2L8y/sample2.jpg',
           desc: 'Modern open-plan loft with rooftop terrace.',
           date: new Date().toLocaleDateString()
         }
@@ -431,6 +496,44 @@
     localStorage.setItem('ami_properties', JSON.stringify(properties));
   }
 
+  // ---------- IMAGE PREVIEW ----------
+  function previewImage(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    selectedImage = file;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const preview = document.getElementById('imagePreview');
+      const img = document.getElementById('previewImg');
+      img.src = e.target.result;
+      preview.classList.add('show');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ---------- UPLOAD TO IMGBB ----------
+  function uploadToImgBB(file) {
+    return new Promise((resolve, reject) => {
+      const formData = new FormData();
+      formData.append('key', IMGBB_API_KEY);
+      formData.append('image', file);
+
+      fetch(IMGBB_UPLOAD_URL, {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          resolve(data.data.url);
+        } else {
+          reject(new Error('Upload failed: ' + data.error.message));
+        }
+      })
+      .catch(error => reject(error));
+    });
+  }
+
   // ---------- RENDER ----------
   function renderProperties() {
     const grid = document.getElementById('propertyGrid');
@@ -441,7 +544,7 @@
     }
     grid.innerHTML = properties.map(p => `
       <div class="property-card" data-id="${p.id}">
-        <img src="${p.image || 'https://picsum.photos/600/400?random=99'}" alt="${p.title}" loading="lazy" />
+        <img src="${p.image || 'https://picsum.photos/600/400?random=99'}" alt="${p.title}" loading="lazy" onerror="this.src='https://picsum.photos/600/400?random=99'" />
         <div class="property-info">
           <h3>${p.title}</h3>
           <div class="price">${p.price}</div>
@@ -477,7 +580,7 @@
       document.getElementById('loginStatus').className = 'status-badge status-unlocked';
       document.getElementById('uploadMsg').textContent = '✅ Admin access granted';
       document.getElementById('uploadMsg').style.color = '#16a34a';
-      renderProperties(); // show delete buttons
+      renderProperties();
       document.getElementById('adminPass').value = '';
     } else {
       alert('❌ Incorrect password. Try again.');
@@ -522,14 +625,16 @@
   }
 
   // ---------- ADD PROPERTY ----------
-  function addProperty() {
+  async function addProperty() {
     if (!adminLoggedIn) {
       alert('Please login as admin first.');
       return;
     }
+
+    if (isUploading) return;
+
     const title = document.getElementById('propTitle').value.trim();
     const price = document.getElementById('propPrice').value.trim();
-    const image = document.getElementById('propImage').value.trim();
     const desc = document.getElementById('propDesc').value.trim();
 
     if (!title || !price) {
@@ -537,11 +642,43 @@
       return;
     }
 
+    const addBtn = document.getElementById('addBtn');
+    const progress = document.getElementById('uploadProgress');
+    const msg = document.getElementById('uploadMsg');
+
+    let imageUrl = '';
+
+    // If image was selected, upload it
+    if (selectedImage) {
+      try {
+        isUploading = true;
+        addBtn.disabled = true;
+        progress.classList.add('show');
+        msg.textContent = '';
+
+        imageUrl = await uploadToImgBB(selectedImage);
+
+        progress.classList.remove('show');
+        addBtn.disabled = false;
+        isUploading = false;
+
+      } catch (error) {
+        progress.classList.remove('show');
+        addBtn.disabled = false;
+        isUploading = false;
+        alert('Image upload failed: ' + error.message + '\nPlease try again.');
+        return;
+      }
+    } else {
+      // No image selected – use placeholder
+      imageUrl = 'https://picsum.photos/600/400?random=' + Date.now();
+    }
+
     const newProp = {
       id: Date.now(),
       title: title,
       price: price,
-      image: image || 'https://picsum.photos/600/400?random=' + Date.now(),
+      image: imageUrl,
       desc: desc || '',
       date: new Date().toLocaleDateString()
     };
@@ -550,17 +687,23 @@
     saveData();
     renderProperties();
     clearForm();
-    document.getElementById('uploadMsg').textContent = '✅ Property added!';
-    document.getElementById('uploadMsg').style.color = '#16a34a';
+    msg.textContent = '✅ Property added with image!';
+    msg.style.color = '#16a34a';
     showPublic();
   }
 
   function clearForm() {
     document.getElementById('propTitle').value = '';
     document.getElementById('propPrice').value = '';
-    document.getElementById('propImage').value = '';
     document.getElementById('propDesc').value = '';
+    document.getElementById('propImage').value = '';
+    document.getElementById('imagePreview').classList.remove('show');
+    document.getElementById('previewImg').src = '';
+    selectedImage = null;
     document.getElementById('uploadMsg').textContent = '';
+    document.getElementById('uploadProgress').classList.remove('show');
+    document.getElementById('addBtn').disabled = false;
+    isUploading = false;
   }
 
   // ---------- INIT ----------

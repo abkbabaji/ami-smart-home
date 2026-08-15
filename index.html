@@ -17,7 +17,6 @@
       color: #0b1a2e;
     }
 
-    /* HEADER */
     header {
       background: #0b1a2e;
       padding: 1.2rem 2rem;
@@ -51,7 +50,6 @@
       color: #c9a84c;
     }
 
-    /* HERO */
     .hero {
       background: linear-gradient(135deg, #0b1a2e 0%, #1a2f44 100%);
       color: white;
@@ -76,7 +74,6 @@
       margin-right: auto;
     }
 
-    /* PROPERTY GRID */
     .container {
       max-width: 1300px;
       margin: 2rem auto;
@@ -105,6 +102,7 @@
       box-shadow: 0 8px 20px rgba(0,0,0,0.06);
       transition: 0.25s ease;
       border: 1px solid #eef2f6;
+      position: relative;
     }
     .property-card:hover {
       transform: translateY(-6px);
@@ -144,6 +142,32 @@
       margin-top: 0.6rem;
     }
 
+    .delete-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #dc2626;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      transition: 0.2s;
+      box-shadow: 0 2px 8px rgba(220,38,38,0.3);
+    }
+    .delete-btn:hover {
+      background: #b91c1c;
+      transform: scale(1.05);
+    }
+    .delete-btn.show {
+      display: flex;
+    }
+
     .empty-msg {
       text-align: center;
       color: #64748b;
@@ -152,7 +176,6 @@
       grid-column: 1 / -1;
     }
 
-    /* ADMIN PANEL (hidden by default) */
     #adminPanel {
       display: none;
       margin-top: 3rem;
@@ -226,6 +249,12 @@
       background: #c9a84c;
       color: white;
     }
+    .btn-danger {
+      background: #dc2626;
+    }
+    .btn-danger:hover {
+      background: #b91c1c;
+    }
 
     .login-box {
       background: #f1f5f9;
@@ -245,7 +274,28 @@
       min-width: 180px;
     }
 
-    /* FOOTER */
+    .status-badge {
+      display: inline-block;
+      padding: 0.3rem 1rem;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    .status-locked {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .status-unlocked {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .change-pass-section {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid #e2e8f0;
+    }
+
     footer {
       text-align: center;
       padding: 2rem 1rem;
@@ -258,7 +308,6 @@
       color: #c9a84c;
     }
 
-    /* responsive */
     @media (max-width: 700px) {
       header {
         flex-direction: column;
@@ -285,31 +334,25 @@
   </div>
 </header>
 
-<!-- HERO -->
 <section class="hero">
   <h2>Your <span>smart</span> move starts here</h2>
   <p>Discover handpicked properties — clean, modern, and built for living well.</p>
 </section>
 
-<!-- MAIN CONTENT -->
 <div class="container">
 
-  <!-- PUBLIC GRID -->
   <div id="publicSection">
     <h2 class="section-title">Available properties</h2>
-    <div class="property-grid" id="propertyGrid">
-      <!-- cards injected by JS -->
-    </div>
+    <div class="property-grid" id="propertyGrid"></div>
   </div>
 
-  <!-- ADMIN PANEL -->
   <div id="adminPanel">
-    <h2>📤 Upload new property</h2>
+    <h2>📤 Admin Dashboard</h2>
 
     <div class="login-box">
       <input type="password" id="adminPass" placeholder="Enter admin password" />
       <button class="btn btn-gold" onclick="loginAdmin()">Unlock</button>
-      <span style="font-size:0.85rem;color:#64748b;">(default: <strong>admin123</strong>)</span>
+      <span id="loginStatus" class="status-badge status-locked">🔒 Locked</span>
     </div>
 
     <div id="uploadForm" style="display:none;">
@@ -324,7 +367,7 @@
       <div class="form-group">
         <label>Image URL</label>
         <input type="text" id="propImage" placeholder="https://... (or use a placeholder)" />
-        <small style="color:#64748b;">Paste a direct image link. For testing, use: https://picsum.photos/600/400?random=1</small>
+        <small style="color:#64748b;">Paste a direct image link.</small>
       </div>
       <div class="form-group">
         <label>Description</label>
@@ -333,6 +376,15 @@
       <button class="btn" onclick="addProperty()">➕ Add property</button>
       <button class="btn btn-outline" onclick="clearForm()">Clear</button>
       <span id="uploadMsg" style="margin-left:1rem;color:#16a34a;"></span>
+
+      <div class="change-pass-section">
+        <h4 style="font-weight:400;margin-bottom:0.5rem;">🔑 Change admin password</h4>
+        <div style="display:flex;flex-wrap:wrap;gap:0.8rem;align-items:center;">
+          <input type="password" id="newPass" placeholder="New password" style="padding:0.6rem 1rem;border:1px solid #cbd5e1;border-radius:30px;flex:1;min-width:150px;" />
+          <button class="btn btn-outline" onclick="changePassword()">Update password</button>
+          <span id="passMsg" style="font-size:0.9rem;color:#16a34a;"></span>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -342,16 +394,16 @@
 </footer>
 
 <script>
-  // ---------- DATA ----------
+  // ---------- SECURE STORAGE ----------
   let properties = [];
+  let adminLoggedIn = false;
+  let adminPassword = localStorage.getItem('ami_admin_password') || 'admin123';
 
-  // load from localStorage
   function loadData() {
     const stored = localStorage.getItem('ami_properties');
     if (stored) {
       try { properties = JSON.parse(stored); } catch(e){ properties = []; }
     } else {
-      // seed with 2 sample properties
       properties = [
         {
           id: Date.now() + 1,
@@ -388,7 +440,7 @@
       return;
     }
     grid.innerHTML = properties.map(p => `
-      <div class="property-card">
+      <div class="property-card" data-id="${p.id}">
         <img src="${p.image || 'https://picsum.photos/600/400?random=99'}" alt="${p.title}" loading="lazy" />
         <div class="property-info">
           <h3>${p.title}</h3>
@@ -396,20 +448,37 @@
           <div class="desc">${p.desc || ''}</div>
           <div class="date">📅 ${p.date || ''}</div>
         </div>
+        <button class="delete-btn ${adminLoggedIn ? 'show' : ''}" onclick="deleteProperty(${p.id})">✕</button>
       </div>
     `).join('');
   }
 
-  // ---------- ADMIN ----------
-  let adminLoggedIn = false;
+  // ---------- DELETE ----------
+  function deleteProperty(id) {
+    if (!adminLoggedIn) {
+      alert('Please login as admin first.');
+      return;
+    }
+    if (!confirm('Delete this property?')) return;
+    properties = properties.filter(p => p.id !== id);
+    saveData();
+    renderProperties();
+    document.getElementById('uploadMsg').textContent = '🗑️ Property deleted';
+    document.getElementById('uploadMsg').style.color = '#dc2626';
+  }
 
+  // ---------- ADMIN LOGIN ----------
   function loginAdmin() {
     const pass = document.getElementById('adminPass').value.trim();
-    if (pass === 'admin123') {
+    if (pass === adminPassword) {
       adminLoggedIn = true;
       document.getElementById('uploadForm').style.display = 'block';
-      document.getElementById('uploadMsg').textContent = '✅ Upload unlocked';
+      document.getElementById('loginStatus').textContent = '🔓 Unlocked';
+      document.getElementById('loginStatus').className = 'status-badge status-unlocked';
+      document.getElementById('uploadMsg').textContent = '✅ Admin access granted';
       document.getElementById('uploadMsg').style.color = '#16a34a';
+      renderProperties(); // show delete buttons
+      document.getElementById('adminPass').value = '';
     } else {
       alert('❌ Incorrect password. Try again.');
     }
@@ -419,16 +488,13 @@
     const panel = document.getElementById('adminPanel');
     panel.classList.toggle('active');
     if (!panel.classList.contains('active')) {
-      // if hiding, reset form visibility
       document.getElementById('uploadForm').style.display = 'none';
       document.getElementById('uploadMsg').textContent = '';
     } else {
-      // if showing, keep upload hidden until login
       if (!adminLoggedIn) {
         document.getElementById('uploadForm').style.display = 'none';
       }
     }
-    // scroll to admin
     if (panel.classList.contains('active')) {
       setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
     }
@@ -438,6 +504,24 @@
     document.getElementById('publicSection').scrollIntoView({ behavior: 'smooth' });
   }
 
+  // ---------- CHANGE PASSWORD ----------
+  function changePassword() {
+    if (!adminLoggedIn) {
+      alert('Please login first.');
+      return;
+    }
+    const newPass = document.getElementById('newPass').value.trim();
+    if (newPass.length < 4) {
+      alert('Password must be at least 4 characters.');
+      return;
+    }
+    adminPassword = newPass;
+    localStorage.setItem('ami_admin_password', newPass);
+    document.getElementById('passMsg').textContent = '✅ Password updated!';
+    document.getElementById('newPass').value = '';
+  }
+
+  // ---------- ADD PROPERTY ----------
   function addProperty() {
     if (!adminLoggedIn) {
       alert('Please login as admin first.');
@@ -462,13 +546,12 @@
       date: new Date().toLocaleDateString()
     };
 
-    properties.unshift(newProp); // newest first
+    properties.unshift(newProp);
     saveData();
     renderProperties();
     clearForm();
     document.getElementById('uploadMsg').textContent = '✅ Property added!';
     document.getElementById('uploadMsg').style.color = '#16a34a';
-    // show public section
     showPublic();
   }
 

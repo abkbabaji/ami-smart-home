@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AMI SMART HOMES</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+    }
+
+    body {
+      background: #f8fafc;
+      color: #0b1a2e;
+    }
+
+    /* HEADER */
+    header {
+      background: #0b1a2e;
+      padding: 1.2rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      border-bottom: 3px solid #c9a84c;
+    }
+
+    .logo h1 {
+      color: #fff;
+      font-weight: 300;
+      letter-spacing: 2px;
+      font-size: 1.8rem;
+    }
+    .logo span {
+      color: #c9a84c;
+      font-weight: 600;
+    }
+
+    .nav-links a {
+      color: #e2e8f0;
+      text-decoration: none;
+      margin-left: 2rem;
+      font-weight: 400;
+      transition: 0.2s;
+      cursor: pointer;
+    }
+    .nav-links a:hover {
+      color: #c9a84c;
+    }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, #0b1a2e 0%, #1a2f44 100%);
+      color: white;
+      padding: 3.5rem 2rem;
+      text-align: center;
+    }
+    .hero h2 {
+      font-size: 2.8rem;
+      font-weight: 300;
+      letter-spacing: 1px;
+    }
+    .hero h2 span {
+      color: #c9a84c;
+      font-weight: 600;
+    }
+    .hero p {
+      margin-top: 0.8rem;
+      font-size: 1.2rem;
+      opacity: 0.8;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* PROPERTY GRID */
+    .container {
+      max-width: 1300px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      font-weight: 300;
+      border-bottom: 2px solid #c9a84c;
+      padding-bottom: 0.5rem;
+      margin-bottom: 2rem;
+      display: inline-block;
+    }
+
+    .property-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .property-card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+      transition: 0.25s ease;
+      border: 1px solid #eef2f6;
+    }
+    .property-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 14px 30px rgba(0,0,0,0.10);
+    }
+
+    .property-card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+      background: #d9e2ec;
+    }
+
+    .property-info {
+      padding: 1.2rem 1.2rem 1.5rem;
+    }
+    .property-info h3 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #0b1a2e;
+    }
+    .property-info .price {
+      color: #c9a84c;
+      font-weight: 600;
+      font-size: 1.2rem;
+      margin: 0.3rem 0 0.5rem;
+    }
+    .property-info .desc {
+      color: #334155;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+    .property-info .date {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      margin-top: 0.6rem;
+    }
+
+    .empty-msg {
+      text-align: center;
+      color: #64748b;
+      font-size: 1.2rem;
+      padding: 3rem 0;
+      grid-column: 1 / -1;
+    }
+
+    /* ADMIN PANEL (hidden by default) */
+    #adminPanel {
+      display: none;
+      margin-top: 3rem;
+      background: #fff;
+      border-radius: 16px;
+      padding: 2rem 2rem 2.5rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+      border: 1px solid #e2e8f0;
+    }
+    #adminPanel.active {
+      display: block;
+    }
+
+    #adminPanel h2 {
+      font-weight: 300;
+      border-bottom: 2px solid #c9a84c;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+    .form-group label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 0.3rem;
+      color: #1e293b;
+    }
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border: 1px solid #d1d9e6;
+      border-radius: 8px;
+      font-size: 1rem;
+      background: #fafcfd;
+    }
+    .form-group textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    .btn {
+      background: #0b1a2e;
+      color: white;
+      border: none;
+      padding: 0.7rem 2rem;
+      border-radius: 30px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-right: 0.8rem;
+    }
+    .btn:hover {
+      background: #1a2f44;
+    }
+    .btn-gold {
+      background: #c9a84c;
+    }
+    .btn-gold:hover {
+      background: #b8973a;
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #c9a84c;
+      color: #0b1a2e;
+    }
+    .btn-outline:hover {
+      background: #c9a84c;
+      color: white;
+    }
+
+    .login-box {
+      background: #f1f5f9;
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+    }
+    .login-box input {
+      padding: 0.6rem 1rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 30px;
+      flex: 1;
+      min-width: 180px;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: #64748b;
+      font-size: 0.9rem;
+      border-top: 1px solid #e2e8f0;
+      margin-top: 2rem;
+    }
+    footer span {
+      color: #c9a84c;
+    }
+
+    /* responsive */
+    @media (max-width: 700px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.8rem;
+      }
+      .nav-links a {
+        margin-left: 0;
+        margin-right: 1.5rem;
+      }
+      .hero h2 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><h1>AMI <span>SMART</span> HOMES</h1></div>
+  <div class="nav-links">
+    <a onclick="showPublic()">🏠 Properties</a>
+    <a onclick="toggleAdmin()">🔐 Admin</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <h2>Your <span>smart</span> move starts here</h2>
+  <p>Discover handpicked properties — clean, modern, and built for living well.</p>
+</section>
+
+<!-- MAIN CONTENT -->
+<div class="container">
+
+  <!-- PUBLIC GRID -->
+  <div id="publicSection">
+    <h2 class="section-title">Available properties</h2>
+    <div class="property-grid" id="propertyGrid">
+      <!-- cards injected by JS -->
+    </div>
+  </div>
+
+  <!-- ADMIN PANEL -->
+  <div id="adminPanel">
+    <h2>📤 Upload new property</h2>
+
+    <div class="login-box">
+      <input type="password" id="adminPass" placeholder="Enter admin password" />
+      <button class="btn btn-gold" onclick="loginAdmin()">Unlock</button>
+      <span style="font-size:0.85rem;color:#64748b;">(default: <strong>admin123</strong>)</span>
+    </div>
+
+    <div id="uploadForm" style="display:none;">
+      <div class="form-group">
+        <label>Property title</label>
+        <input type="text" id="propTitle" placeholder="e.g. Modern 3BR Villa" />
+      </div>
+      <div class="form-group">
+        <label>Price</label>
+        <input type="text" id="propPrice" placeholder="e.g. $450,000" />
+      </div>
+      <div class="form-group">
+        <label>Image URL</label>
+        <input type="text" id="propImage" placeholder="https://... (or use a placeholder)" />
+        <small style="color:#64748b;">Paste a direct image link. For testing, use: https://picsum.photos/600/400?random=1</small>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="propDesc" placeholder="Brief description..."></textarea>
+      </div>
+      <button class="btn" onclick="addProperty()">➕ Add property</button>
+      <button class="btn btn-outline" onclick="clearForm()">Clear</button>
+      <span id="uploadMsg" style="margin-left:1rem;color:#16a34a;"></span>
+    </div>
+  </div>
+</div>
+
+<footer>
+  &copy; 2026 <span>AMI SMART HOMES</span> — all rights reserved.
+</footer>
+
+<script>
+  // ---------- DATA ----------
+  let properties = [];
+
+  // load from localStorage
+  function loadData() {
+    const stored = localStorage.getItem('ami_properties');
+    if (stored) {
+      try { properties = JSON.parse(stored); } catch(e){ properties = []; }
+    } else {
+      // seed with 2 sample properties
+      properties = [
+        {
+          id: Date.now() + 1,
+          title: 'Sunny Hills Estate',
+          price: '$525,000',
+          image: 'https://picsum.photos/600/400?random=10',
+          desc: '4 bedrooms, 3 baths, pool, and mountain views.',
+          date: new Date().toLocaleDateString()
+        },
+        {
+          id: Date.now() + 2,
+          title: 'Downtown Loft',
+          price: '$310,000',
+          image: 'https://picsum.photos/600/400?random=20',
+          desc: 'Modern open-plan loft with rooftop terrace.',
+          date: new Date().toLocaleDateString()
+        }
+      ];
+      saveData();
+    }
+    renderProperties();
+  }
+
+  function saveData() {
+    localStorage.setItem('ami_properties', JSON.stringify(properties));
+  }
+
+  // ---------- RENDER ----------
+  function renderProperties() {
+    const grid = document.getElementById('propertyGrid');
+    if (!grid) return;
+    if (properties.length === 0) {
+      grid.innerHTML = `<div class="empty-msg">🏡 No properties listed yet. Check back soon!</div>`;
+      return;
+    }
+    grid.innerHTML = properties.map(p => `
+      <div class="property-card">
+        <img src="${p.image || 'https://picsum.photos/600/400?random=99'}" alt="${p.title}" loading="lazy" />
+        <div class="property-info">
+          <h3>${p.title}</h3>
+          <div class="price">${p.price}</div>
+          <div class="desc">${p.desc || ''}</div>
+          <div class="date">📅 ${p.date || ''}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // ---------- ADMIN ----------
+  let adminLoggedIn = false;
+
+  function loginAdmin() {
+    const pass = document.getElementById('adminPass').value.trim();
+    if (pass === 'admin123') {
+      adminLoggedIn = true;
+      document.getElementById('uploadForm').style.display = 'block';
+      document.getElementById('uploadMsg').textContent = '✅ Upload unlocked';
+      document.getElementById('uploadMsg').style.color = '#16a34a';
+    } else {
+      alert('❌ Incorrect password. Try again.');
+    }
+  }
+
+  function toggleAdmin() {
+    const panel = document.getElementById('adminPanel');
+    panel.classList.toggle('active');
+    if (!panel.classList.contains('active')) {
+      // if hiding, reset form visibility
+      document.getElementById('uploadForm').style.display = 'none';
+      document.getElementById('uploadMsg').textContent = '';
+    } else {
+      // if showing, keep upload hidden until login
+      if (!adminLoggedIn) {
+        document.getElementById('uploadForm').style.display = 'none';
+      }
+    }
+    // scroll to admin
+    if (panel.classList.contains('active')) {
+      setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    }
+  }
+
+  function showPublic() {
+    document.getElementById('publicSection').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function addProperty() {
+    if (!adminLoggedIn) {
+      alert('Please login as admin first.');
+      return;
+    }
+    const title = document.getElementById('propTitle').value.trim();
+    const price = document.getElementById('propPrice').value.trim();
+    const image = document.getElementById('propImage').value.trim();
+    const desc = document.getElementById('propDesc').value.trim();
+
+    if (!title || !price) {
+      alert('Title and price are required.');
+      return;
+    }
+
+    const newProp = {
+      id: Date.now(),
+      title: title,
+      price: price,
+      image: image || 'https://picsum.photos/600/400?random=' + Date.now(),
+      desc: desc || '',
+      date: new Date().toLocaleDateString()
+    };
+
+    properties.unshift(newProp); // newest first
+    saveData();
+    renderProperties();
+    clearForm();
+    document.getElementById('uploadMsg').textContent = '✅ Property added!';
+    document.getElementById('uploadMsg').style.color = '#16a34a';
+    // show public section
+    showPublic();
+  }
+
+  function clearForm() {
+    document.getElementById('propTitle').value = '';
+    document.getElementById('propPrice').value = '';
+    document.getElementById('propImage').value = '';
+    document.getElementById('propDesc').value = '';
+    document.getElementById('uploadMsg').textContent = '';
+  }
+
+  // ---------- INIT ----------
+  loadData();
+</script>
+</body>
+</html>
